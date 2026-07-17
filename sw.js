@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE = "grok-v1.1.1";
+const CACHE = "grok-v1.2.0";
 const ASSETS = [
   "./",
   "./index.html",
@@ -25,13 +25,26 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const req = event.request;
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+
+  // Pages: network-first so a refresh always pulls the latest deploy;
+  // the cache is only an offline fallback.
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((cache) => cache.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req).then((cached) => cached || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // Static assets (icons, manifest): cache-first, versioned by CACHE.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).catch(() => {
-        if (event.request.mode === "navigate") return caches.match("./index.html");
-      });
-    })
+    caches.match(req).then((cached) => cached || fetch(req))
   );
 });

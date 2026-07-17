@@ -19,19 +19,29 @@ There is no test framework; verify changes by loading the page in a browser (hea
 ## Architecture
 
 - `index.html` — the entire app: all CSS and JS are inline. Character sets, generation logic (crypto.getRandomValues with rejection sampling, per-set guarantee, Fisher–Yates shuffle), and the entropy-based strength meter all live in its single `<script>` block.
-- `sw.js` — service worker, cache-first. Its `CACHE` constant carries the app version (see Versioning); without a bump, clients keep serving the stale cached copy.
+- `sw.js` — service worker. Network-first for page navigations (so a refresh always pulls the latest deploy, with the cache as offline fallback), cache-first for static assets. Its `CACHE` constant carries the app version (see Versioning).
 - `manifest.webmanifest` / `icons/` — PWA metadata. Icons are rendered from SVG with ImageMagick (`convert`); the four-dot motif uses the same character-class colors as the UI.
 - All URLs are relative (`./`) because GitHub Pages serves the app from a subpath (`/grok/`). Keep them relative.
 
 ## Versioning
 
-The app is semver'd, and the version must be bumped on **every commit** (patch for fixes/tweaks, minor for features, major for breaking changes or redesigns). A bump means updating all of:
+The app is semver'd, and the version must be bumped on **every commit** that touches app files (patch for fixes/tweaks, minor for features, major for breaking changes or redesigns). Run:
 
-1. The footer in `index.html` — version and build date (`vX.Y.Z · built YYYY-MM-DD`).
-2. The `CACHE` constant in `sw.js` (`grok-vX.Y.Z`) — this is also what invalidates clients' offline caches.
+```
+scripts/bump-version.sh [major|minor|patch]   # default: patch
+```
+
+This updates the `index.html` footer (`vX.Y.Z · built YYYY-MM-DD`) and the `CACHE` constant in `sw.js` together — the latter invalidates clients' offline asset caches.
+
+A pre-commit hook in `.githooks/` rejects commits that change app files without a bump. It is enabled per-clone with:
+
+```
+git config core.hooksPath .githooks
+```
 
 ## Conventions
 
 - Dark theme only; design tokens are CSS custom properties in `:root` in index.html.
 - Character classes (upper/lower/digit/common/extended symbols) each have a color used consistently across the password display, checkbox samples, checkbox accents, and app icon. New character-class features should follow this pattern.
 - System font stacks only — the app must work fully offline, so no web fonts or other external resources.
+- A strict CSP `<meta>` tag in index.html blocks all external requests; any new resource must be same-origin or inline, and the CSP must be updated deliberately if a new resource type is added. Keep the no-referrer and notranslate metas and the `translate="no"` on the password element — they stop browsers shipping page content (including the password) to translation services.

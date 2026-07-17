@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Refuse to commit app changes without a version bump, so every deploy
+# invalidates clients' offline caches. Bypass (docs-only etc.): git commit --no-verify
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+# Only app files require a bump.
+if git diff --cached --quiet -- index.html sw.js manifest.webmanifest icons; then
+  exit 0
+fi
+
+old=$(git show HEAD:sw.js 2>/dev/null | grep -oP 'grok-v\K[0-9.]+' || echo "none")
+new=$(git show :sw.js | grep -oP 'grok-v\K[0-9.]+')
+
+if [ "$old" = "$new" ]; then
+  echo "pre-commit: app files changed but version is still v$new." >&2
+  echo "Run scripts/bump-version.sh [major|minor|patch] and re-stage." >&2
+  exit 1
+fi
+
+if ! git show :index.html | grep -q "v$new · built"; then
+  echo "pre-commit: index.html footer is out of sync with sw.js (expected v$new)." >&2
+  echo "Run scripts/bump-version.sh to update both together." >&2
+  exit 1
+fi

@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="google" content="notranslate">
 <meta name="description" content="Random passwords, generated on your device. No ads, no consent, just an app.">
 <meta name="theme-color" content="#14161c">
 <title>grok — password generator</title>
@@ -224,7 +227,7 @@
 
 <main>
   <section class="output-card" aria-label="Generated password">
-    <div id="password" class="password" aria-live="polite" title="Click to copy"></div>
+    <div id="password" class="password" aria-live="polite" title="Click to copy" translate="no"></div>
     <div class="actions">
       <button id="copy" class="primary">Copy</button>
       <button id="regenerate">Regenerate</button>
@@ -271,14 +274,14 @@
     <fieldset>
       <legend>Options</legend>
       <div class="set-row">
-        <label><input type="checkbox" id="opt-ambiguous"> Exclude ambiguous
+        <label><input type="checkbox" id="opt-ambiguous" checked> Exclude ambiguous
           <span class="sample ambiguous">O0Il1|</span></label>
       </div>
     </fieldset>
   </section>
 </main>
 
-<footer>Runs entirely on this device · works offline · nothing leaves your browser<br>v1.1.1 · built 2026-07-17</footer>
+<footer>Runs entirely on this device · works offline · nothing leaves your browser<br>v1.2.0 · built 2026-07-17</footer>
 
 <script>
 "use strict";
