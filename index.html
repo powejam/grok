@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Random passwords, generated on your device. No ads, no consent, just an app.">
+<meta name="theme-color" content="#14161c">
+<title>grok — password generator</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  :root {
+    --bg: #14161c;
+    --surface: #1b1e26;
+    --surface-2: #22262f;
+    --border: #2b303c;
+    --text: #d9d4c7;
+    --text-dim: #8b8fa3;
+    --c-lower: #d9d4c7;
+    --c-upper: #ffffff;
+    --c-digit: #7ec3ff;
+    --c-common: #f5a97f;
+    --c-ext: #e48fb8;
+    --s-weak: #e0616d;
+    --s-fair: #f5a97f;
+    --s-good: #e8c264;
+    --s-strong: #9ece6a;
+    --s-excellent: #7fd7c4;
+    --mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1.25rem 2rem;
+  }
+
+  main { width: 100%; max-width: 34rem; }
+
+  header {
+    width: 100%;
+    max-width: 34rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  h1 .dots { letter-spacing: 0.1em; margin-left: 0.35rem; }
+  h1 .dots span:nth-child(1) { color: var(--c-lower); }
+  h1 .dots span:nth-child(2) { color: var(--c-digit); }
+  h1 .dots span:nth-child(3) { color: var(--c-common); }
+  h1 .dots span:nth-child(4) { color: var(--c-ext); }
+  .tagline { color: var(--text-dim); font-size: 0.85rem; }
+
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.25rem 1.1rem;
+  }
+
+  .password {
+    font-family: var(--mono);
+    font-size: clamp(1.15rem, 4.2vw, 1.5rem);
+    letter-spacing: 0.05em;
+    word-break: break-all;
+    min-height: 2.6em;
+    cursor: pointer;
+    user-select: all;
+  }
+  .password .hint {
+    color: var(--text-dim);
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    letter-spacing: normal;
+    cursor: default;
+  }
+  .password span { animation: char-in 0.18s both; }
+  .c-lower  { color: var(--c-lower); }
+  .c-upper  { color: var(--c-upper); }
+  .c-digit  { color: var(--c-digit); }
+  .c-common { color: var(--c-common); }
+  .c-ext    { color: var(--c-ext); }
+
+  @keyframes char-in {
+    from { opacity: 0; transform: translateY(0.2em); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .actions { display: flex; gap: 0.6rem; margin-top: 1rem; }
+  button {
+    font: 600 0.9rem var(--sans);
+    border-radius: 9px;
+    padding: 0.55rem 1.1rem;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button.primary {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+  button:hover { border-color: var(--text-dim); }
+  button.primary:hover { background: #fff; border-color: #fff; }
+  button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--c-digit);
+    outline-offset: 2px;
+  }
+
+  .strength { margin-top: 1.1rem; }
+  .strength-track { display: flex; gap: 4px; }
+  .strength-track i {
+    height: 5px;
+    flex: 1;
+    border-radius: 3px;
+    background: var(--surface-2);
+    transition: background 0.25s;
+  }
+  .strength-label {
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .strength-label b { font-weight: 600; }
+
+  .controls { margin-top: 1.6rem; }
+
+  .length-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 0.25rem;
+  }
+  .length-row label { font-size: 0.9rem; min-width: 4.5rem; }
+  .length-row output {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    min-width: 2ch;
+    text-align: right;
+  }
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--text);
+    min-height: 1.5rem;
+  }
+
+  fieldset { border: 0; padding: 0; margin-top: 0.5rem; }
+  legend {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    padding: 0 0.25rem 0.4rem;
+  }
+  .set-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .set-row label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .set-row input { width: 1.05rem; height: 1.05rem; cursor: pointer; }
+  #set-upper  { accent-color: var(--c-upper); }
+  #set-lower  { accent-color: var(--c-lower); }
+  #set-digit  { accent-color: var(--c-digit); }
+  #set-common { accent-color: var(--c-common); }
+  #set-ext    { accent-color: var(--c-ext); }
+  .set-row .sample {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    opacity: 0.85;
+  }
+
+  footer {
+    margin-top: 2.25rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .password span { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>grok<span class="dots" aria-hidden="true"><span>•</span><span>•</span><span>•</span><span>•</span></span></h1>
+  <p class="tagline">random passwords, generated on your device</p>
+</header>
+
+<main>
+  <section class="output-card" aria-label="Generated password">
+    <div id="password" class="password" aria-live="polite" title="Click to copy"></div>
+    <div class="actions">
+      <button id="copy" class="primary">Copy</button>
+      <button id="regenerate">Regenerate</button>
+    </div>
+    <div class="strength">
+      <div class="strength-track" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <span id="strength-label" class="strength-label"></span>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Password options">
+    <div class="length-row">
+      <label for="length">Length</label>
+      <input type="range" id="length" min="4" max="64" value="20">
+      <output id="length-value" for="length">20</output>
+    </div>
+
+    <fieldset>
+      <legend>Characters</legend>
+      <div class="set-row">
+        <label><input type="checkbox" id="set-upper" checked> Uppercase
+          <span class="sample c-upper">A–Z</span></label>
+      </div>
+      <div class="set-row">
+        <label><input type="checkbox" id="set-lower" checked> Lowercase
+          <span class="sample c-lower">a–z</span></label>
+      </div>
+      <div class="set-row">
+        <label><input type="checkbox" id="set-digit" checked> Numbers
+          <span class="sample c-digit">0–9</span></label>
+      </div>
+      <div class="set-row">
+        <label><input type="checkbox" id="set-common" checked> Common symbols
+          <span class="sample c-common">_-!?$%&amp;@#+=*</span></label>
+      </div>
+      <div class="set-row">
+        <label><input type="checkbox" id="set-ext"> Extended symbols
+          <span class="sample c-ext">^~`()[]{}&lt;&gt;|/\'";:,.</span></label>
+      </div>
+    </fieldset>
+  </section>
+</main>
+
+<footer>Runs entirely on this device · works offline · nothing leaves your browser</footer>
+
+<script>
+"use strict";
+
+const SETS = {
+  upper:  { chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ", cls: "c-upper" },
+  lower:  { chars: "abcdefghijklmnopqrstuvwxyz", cls: "c-lower" },
+  digit:  { chars: "0123456789",                 cls: "c-digit" },
+  common: { chars: "_-!?$%&@#+=*",               cls: "c-common" },
+  ext:    { chars: "^~`()[]{}<>|/\\'\";:,.",     cls: "c-ext" },
+};
+const SET_IDS = Object.keys(SETS);
+
+const TIERS = [
+  { min: 120, label: "Excellent", color: "var(--s-excellent)" },
+  { min: 90,  label: "Strong",    color: "var(--s-strong)" },
+  { min: 65,  label: "Good",      color: "var(--s-good)" },
+  { min: 45,  label: "Fair",      color: "var(--s-fair)" },
+  { min: 0,   label: "Weak",      color: "var(--s-weak)" },
+];
+
+const $ = (id) => document.getElementById(id);
+const passwordEl = $("password");
+const copyBtn = $("copy");
+const lengthInput = $("length");
+const segments = document.querySelectorAll(".strength-track i");
+
+let current = "";
+
+// Uniform integer in [0, n) via rejection sampling — avoids modulo bias.
+function randInt(n) {
+  const limit = Math.floor(65536 / n) * n;
+  const buf = new Uint16Array(1);
+  do { crypto.getRandomValues(buf); } while (buf[0] >= limit);
+  return buf[0] % n;
+}
+
+const pick = (chars) => chars[randInt(chars.length)];
+
+function classFor(ch) {
+  for (const id of SET_IDS) {
+    if (SETS[id].chars.includes(ch)) return SETS[id].cls;
+  }
+  return "";
+}
+
+function activeSets() {
+  return SET_IDS.filter((id) => $("set-" + id).checked);
+}
+
+function generate() {
+  const active = activeSets();
+  if (active.length === 0) {
+    current = "";
+    passwordEl.innerHTML = '<span class="hint">Select at least one character set.</span>';
+    updateStrength(null);
+    return;
+  }
+
+  const pool = active.map((id) => SETS[id].chars).join("");
+  const len = Number(lengthInput.value);
+  const chars = [];
+
+  // Guarantee at least one character from each selected set, then fill.
+  if (len >= active.length) {
+    for (const id of active) chars.push(pick(SETS[id].chars));
+  }
+  while (chars.length < len) chars.push(pick(pool));
+
+  // Fisher–Yates shuffle so the guaranteed characters aren't front-loaded.
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = randInt(i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+
+  current = chars.join("");
+  passwordEl.textContent = "";
+  chars.forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.className = classFor(ch);
+    span.textContent = ch;
+    span.style.animationDelay = Math.min(i * 12, 350) + "ms";
+    passwordEl.appendChild(span);
+  });
+
+  updateStrength(len * Math.log2(pool.length));
+}
+
+function updateStrength(bits) {
+  const label = $("strength-label");
+  if (bits === null) {
+    segments.forEach((s) => (s.style.background = ""));
+    label.textContent = "";
+    return;
+  }
+  const tierIndex = TIERS.findIndex((t) => bits >= t.min);
+  const tier = TIERS[tierIndex];
+  const filled = TIERS.length - tierIndex;
+  segments.forEach((s, i) => {
+    s.style.background = i < filled ? tier.color : "";
+  });
+  label.innerHTML = "";
+  const b = document.createElement("b");
+  b.textContent = tier.label;
+  b.style.color = tier.color;
+  label.append(b, ` · ~${Math.round(bits)} bits`);
+}
+
+async function copyPassword() {
+  if (!current) return;
+  try {
+    await navigator.clipboard.writeText(current);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = current;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  }
+  copyBtn.textContent = "Copied ✓";
+  setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+}
+
+copyBtn.addEventListener("click", copyPassword);
+passwordEl.addEventListener("click", copyPassword);
+$("regenerate").addEventListener("click", generate);
+lengthInput.addEventListener("input", () => {
+  $("length-value").value = lengthInput.value;
+  generate();
+});
+SET_IDS.forEach((id) => $("set-" + id).addEventListener("change", generate));
+
+generate();
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+}
+</script>
+</body>
+</html>
