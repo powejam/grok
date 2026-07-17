@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE = "grok-v1";
+const CACHE = "grok-v1.1.0";
 const ASSETS = [
   "./",
   "./index.html",
