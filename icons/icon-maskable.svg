@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Maskable variant: full-bleed background, content scaled into the safe zone. -->
+  <defs>
+    <radialGradient id="eye" cx="50%" cy="42%" r="62%">
+      <stop offset="0%"  stop-color="#ffe6c0"/>
+      <stop offset="14%" stop-color="#ff7a4d"/>
+      <stop offset="42%" stop-color="#ff2a24"/>
+      <stop offset="76%" stop-color="#b00d16"/>
+      <stop offset="100%" stop-color="#4d0000"/>
+    </radialGradient>
+    <radialGradient id="bloom" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7a1012" stop-opacity="0.9"/>
+      <stop offset="55%" stop-color="#360708" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="face" cx="50%" cy="36%" r="60%">
+      <stop offset="0%"  stop-color="#3d1514" stop-opacity="0.92"/>
+      <stop offset="45%" stop-color="#1c0a0a" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <filter id="softer" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <filter id="glow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="11" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" fill="#050404"/>
+
+  <g transform="translate(256,256) scale(0.86) translate(-256,-256)">
+    <!-- ambient red wash around the eyes -->
+    <ellipse cx="256" cy="214" rx="185" ry="130" fill="url(#bloom)" filter="url(#softer)"/>
+
+    <!-- unified face mass, lit by the eyes and fading to black -->
+    <ellipse cx="256" cy="276" rx="180" ry="170" fill="url(#face)" filter="url(#softer)"/>
+
+    <!-- brow ridge, lit red, dipping into an angry furrow between the eyes -->
+    <path d="M118,178 Q256,208 394,178" stroke="#7d2622" stroke-width="16" fill="none"
+          opacity="0.8" filter="url(#soft)"/>
+    <path d="M150,176 Q256,200 362,176" stroke="#b64a3e" stroke-width="5" fill="none"
+          opacity="0.45" filter="url(#soft)"/>
+
+    <!-- nose: lit bridge running down to the nostrils -->
+    <path d="M256,240 L246,312 L256,326 L266,312 Z" fill="#4a1a18" opacity="0.7" filter="url(#soft)"/>
+    <ellipse cx="238" cy="322" rx="12" ry="8" fill="#000" filter="url(#soft)"/>
+    <ellipse cx="274" cy="322" rx="12" ry="8" fill="#000" filter="url(#soft)"/>
+
+    <!-- eye bloom -->
+    <g filter="url(#softer)">
+      <ellipse cx="200" cy="214" rx="62" ry="40" fill="#ff1e1e" opacity="0.5"/>
+      <ellipse cx="312" cy="214" rx="62" ry="40" fill="#ff1e1e" opacity="0.5"/>
+    </g>
+
+    <!-- eyes: angry angled almonds, inner corner low -->
+    <g filter="url(#glow)">
+      <path d="M140,198 Q200,200 248,232 Q196,244 140,198 Z" fill="url(#eye)"/>
+      <path d="M372,198 Q312,200 264,232 Q316,244 372,198 Z" fill="url(#eye)"/>
+    </g>
+    <ellipse cx="196" cy="218" rx="5" ry="13" fill="#2a0000" opacity="0.7"/>
+    <ellipse cx="316" cy="218" rx="5" ry="13" fill="#2a0000" opacity="0.7"/>
+
+    <!-- haphazard binary field beneath the eyes, fading at the sides -->
+    <g font-family="'DejaVu Sans Mono', 'Liberation Mono', monospace" font-weight="bold" text-anchor="middle" dominant-baseline="central">
+      <text x="53" y="378" font-size="44" fill="#e48fb8" opacity="0.11" transform="rotate(-11.4 53 378)">0</text>
+      <text x="90" y="364" font-size="37" fill="#ffffff" opacity="0.25" transform="rotate(-2.1 90 364)">0</text>
+      <text x="133" y="370" font-size="25" fill="#e48fb8" opacity="0.5" transform="rotate(13.3 133 370)">0</text>
+      <text x="177" y="373" font-size="28" fill="#d9d4c7" opacity="0.76" transform="rotate(1.7 177 373)">0</text>
+      <text x="210" y="376" font-size="35" fill="#f5a97f" opacity="0.75" transform="rotate(1.8 210 376)">0</text>
+      <text x="261" y="380" font-size="34" fill="#ffffff" opacity="0.84" transform="rotate(-3.9 261 380)">0</text>
+      <text x="300" y="372" font-size="42" fill="#7ec3ff" opacity="0.79" transform="rotate(-4.4 300 372)">1</text>
+      <text x="340" y="377" font-size="40" fill="#f5a97f" opacity="0.64" transform="rotate(-9.7 340 377)">1</text>
+      <text x="378" y="380" font-size="41" fill="#e48fb8" opacity="0.33" transform="rotate(-5.2 378 380)">1</text>
+      <text x="428" y="381" font-size="26" fill="#d9d4c7" opacity="0.27" transform="rotate(-0.7 428 381)">0</text>
+      <text x="68" y="414" font-size="42" fill="#7ec3ff" opacity="0.14" transform="rotate(-6.0 68 414)">1</text>
+      <text x="101" y="408" font-size="29" fill="#ffffff" opacity="0.22" transform="rotate(-7.9 101 408)">1</text>
+      <text x="135" y="407" font-size="39" fill="#f5a97f" opacity="0.58" transform="rotate(1.4 135 407)">0</text>
+      <text x="191" y="412" font-size="37" fill="#ffffff" opacity="0.79" transform="rotate(-3.3 191 412)">0</text>
+      <text x="214" y="415" font-size="31" fill="#d9d4c7" opacity="0.52" transform="rotate(-8.9 214 415)">1</text>
+      <text x="260" y="417" font-size="43" fill="#f5a97f" opacity="0.57" transform="rotate(5.3 260 417)">0</text>
+      <text x="301" y="406" font-size="41" fill="#d9d4c7" opacity="0.88" transform="rotate(-11.1 301 406)">1</text>
+      <text x="345" y="405" font-size="38" fill="#e48fb8" opacity="0.45" transform="rotate(-12.5 345 405)">0</text>
+      <text x="404" y="399" font-size="35" fill="#ffffff" opacity="0.28" transform="rotate(-8.2 404 399)">1</text>
+      <text x="436" y="400" font-size="43" fill="#f5a97f" opacity="0.22" transform="rotate(9.8 436 400)">1</text>
+      <text x="64" y="449" font-size="27" fill="#e48fb8" opacity="0.12" transform="rotate(-0.6 64 449)">0</text>
+      <text x="93" y="448" font-size="40" fill="#d9d4c7" opacity="0.21" transform="rotate(11.6 93 448)">1</text>
+      <text x="153" y="441" font-size="35" fill="#ffffff" opacity="0.59" transform="rotate(-7.8 153 441)">1</text>
+      <text x="190" y="450" font-size="30" fill="#ffffff" opacity="0.69" transform="rotate(6.7 190 450)">0</text>
+      <text x="241" y="450" font-size="24" fill="#e48fb8" opacity="0.74" transform="rotate(-0.8 241 450)">0</text>
+      <text x="281" y="441" font-size="35" fill="#f5a97f" opacity="0.96" transform="rotate(-7.8 281 441)">0</text>
+      <text x="324" y="446" font-size="43" fill="#d9d4c7" opacity="0.53" transform="rotate(-13.9 324 446)">1</text>
+      <text x="358" y="449" font-size="36" fill="#f5a97f" opacity="0.68" transform="rotate(-0.6 358 449)">0</text>
+      <text x="389" y="449" font-size="36" fill="#ffffff" opacity="0.5" transform="rotate(-11.6 389 449)">0</text>
+      <text x="436" y="450" font-size="42" fill="#7ec3ff" opacity="0.32" transform="rotate(-9.9 436 450)">1</text>
+    </g>
+  </g>
+</svg>

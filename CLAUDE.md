@@ -20,7 +20,7 @@ There is no test framework; verify changes by loading the page in a browser (hea
 
 - `index.html` — the entire app: all CSS and JS are inline. Character sets, generation logic (crypto.getRandomValues with rejection sampling, per-set guarantee, Fisher–Yates shuffle), and the entropy-based strength meter all live in its single `<script>` block.
 - `sw.js` — service worker. Network-first for page navigations (so a refresh always pulls the latest deploy, with the cache as offline fallback), cache-first for static assets. Its `CACHE` constant carries the app version (see Versioning).
-- `manifest.webmanifest` / `icons/` — PWA metadata. Icons are rendered from SVG with ImageMagick (`convert`); the four-dot motif uses the same character-class colors as the UI.
+- `manifest.webmanifest` / `icons/` — PWA metadata. The PNGs are rendered from the committed SVG sources (`icons/icon.svg`, `icons/icon-maskable.svg`) via headless Chrome screenshots at the target sizes; the motif is a beast emerging from the dark with glowing red eyes, over a haphazard scattered field of binary digits (a "password") in the same character-class colors as the UI.
 - All URLs are relative (`./`) because GitHub Pages serves the app from a subpath (`/grok/`). Keep them relative.
 
 ## Versioning
