@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE = "grok-v1.3.0";
+const CACHE = "grok-v1.3.1";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,7 +19,8 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      // Only Grok's own caches: on powejam.github.io every app shares one origin.
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("grok-") && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-grok is a password generator PWA — no ads, no tracking, fully client-side. It is deployed via GitHub Pages, which builds automatically on push to `main`.
+grok is a password generator PWA — no ads, no tracking, fully client-side. Push to `main` deploys. The canonical address is `grok.powejam.com` (Cloudflare Pages, no build step). GitHub Pages still publishes `powejam.github.io/grok/` until it is retired; there the page shows a "Grok has moved" notice instead of the app.
 
 ## Development
 
@@ -21,7 +21,7 @@ There is no test framework; verify changes by loading the page in a browser (hea
 - `index.html` — the entire app: all CSS and JS are inline. Character sets, generation logic (crypto.getRandomValues with rejection sampling, per-set guarantee, Fisher–Yates shuffle), and the entropy-based strength meter all live in its single `<script>` block.
 - `sw.js` — service worker. Network-first for page navigations (so a refresh always pulls the latest deploy, with the cache as offline fallback), cache-first for static assets. Its `CACHE` constant carries the app version (see Versioning).
 - `manifest.webmanifest` / `icons/` — PWA metadata. The PNGs are rendered from the committed SVG sources (`icons/icon.svg`, `icons/icon-maskable.svg`) via headless Chrome screenshots at the target sizes; the motif is a beast emerging from the dark with glowing red eyes, over a haphazard scattered field of binary digits (a "password") in the same character-class colors as the UI.
-- All URLs are relative (`./`) because GitHub Pages serves the app from a subpath (`/grok/`). Keep them relative.
+- All URLs are relative (`./`) so the app works both at the root of `grok.powejam.com` and under GitHub Pages' `/grok/` subpath. Keep them relative.
 
 ## Versioning
 
